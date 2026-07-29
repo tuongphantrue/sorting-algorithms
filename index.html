@@ -325,43 +325,114 @@
 (() => {
   const PSEUDOCODE = {
     bubble: [
-      'for i in 0 .. n-1',
-      '  for j in 0 .. n-i-2',
-      '    if a[j] > a[j+1]',
-      '      swap a[j], a[j+1]'
+      'function bubbleSort(arr) {',
+      '  const n = arr.length;',
+      '  for (let i = 0; i < n; i++) {',
+      '    for (let j = 0; j < n - i - 1; j++) {',
+      '      if (arr[j] > arr[j + 1]) {',
+      '        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];',
+      '      }',
+      '    }',
+      '  }',
+      '  return arr;',
+      '}'
     ],
     selection: [
-      'for i in 0 .. n-1',
-      '  min = i',
-      '  for j in i+1 .. n-1',
-      '    if a[j] < a[min]: min = j',
-      '  swap a[i], a[min]'
+      'function selectionSort(arr) {',
+      '  const n = arr.length;',
+      '  for (let i = 0; i < n; i++) {',
+      '    let min = i;',
+      '    for (let j = i + 1; j < n; j++) {',
+      '      if (arr[j] < arr[min]) min = j;',
+      '    }',
+      '    if (min !== i) {',
+      '      [arr[i], arr[min]] = [arr[min], arr[i]];',
+      '    }',
+      '  }',
+      '  return arr;',
+      '}'
     ],
     insertion: [
-      'a[0] is trivially sorted',
-      'for i in 1 .. n-1',
-      '  while j >= 0 and a[j] > key',
-      '    a[j+1] = a[j]; j -= 1',
-      '  a[j+1] = key'
+      'function insertionSort(arr) {',
+      '  const n = arr.length;',
+      '  for (let i = 1; i < n; i++) {',
+      '    const key = arr[i];',
+      '    let j = i - 1;',
+      '    while (j >= 0 && arr[j] > key) {',
+      '      arr[j + 1] = arr[j];',
+      '      j--;',
+      '    }',
+      '    arr[j + 1] = key;',
+      '  }',
+      '  return arr;',
+      '}'
     ],
     merge: [
-      'if len(a) <= 1: return a',
-      'split into left, right; sort each half',
-      'merge: compare fronts, write smaller',
-      'copy any remaining elements'
+      'function mergeSort(arr, lo = 0, hi = arr.length - 1) {',
+      '  if (lo >= hi) return;',
+      '  const mid = Math.floor((lo + hi) / 2);',
+      '  mergeSort(arr, lo, mid);',
+      '  mergeSort(arr, mid + 1, hi);',
+      '  merge(arr, lo, mid, hi);',
+      '}',
+      '',
+      'function merge(arr, lo, mid, hi) {',
+      '  const left = arr.slice(lo, mid + 1);',
+      '  const right = arr.slice(mid + 1, hi + 1);',
+      '  let i = 0, j = 0, k = lo;',
+      '  while (i < left.length && j < right.length) {',
+      '    if (left[i] <= right[j]) arr[k++] = left[i++];',
+      '    else arr[k++] = right[j++];',
+      '  }',
+      '  while (i < left.length) arr[k++] = left[i++];',
+      '  while (j < right.length) arr[k++] = right[j++];',
+      '}'
     ],
     quick: [
-      'if lo < hi:',
-      '  choose pivot',
-      '  p = partition(lo, hi)',
-      '    scan j, swap smaller-than-pivot left',
-      '    swap pivot into place',
-      '  recurse on both sides'
+      'function quickSort(arr, lo = 0, hi = arr.length - 1) {',
+      '  if (lo < hi) {',
+      '    const p = partition(arr, lo, hi);',
+      '    quickSort(arr, lo, p - 1);',
+      '    quickSort(arr, p + 1, hi);',
+      '  }',
+      '}',
+      '',
+      'function partition(arr, lo, hi) {',
+      '  const pivot = arr[hi];',
+      '  let i = lo - 1;',
+      '  for (let j = lo; j < hi; j++) {',
+      '    if (arr[j] < pivot) {',
+      '      i++;',
+      '      [arr[i], arr[j]] = [arr[j], arr[i]];',
+      '    }',
+      '  }',
+      '  [arr[i + 1], arr[hi]] = [arr[hi], arr[i + 1]];',
+      '  return i + 1;',
+      '}'
     ],
     heap: [
-      'build a max-heap from a',
-      '  swap root with last, shrink heap',
-      '  sift down to restore heap order'
+      'function heapSort(arr) {',
+      '  const n = arr.length;',
+      '  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {',
+      '    heapify(arr, n, i);',
+      '  }',
+      '  for (let i = n - 1; i > 0; i--) {',
+      '    [arr[0], arr[i]] = [arr[i], arr[0]];',
+      '    heapify(arr, i, 0);',
+      '  }',
+      '}',
+      '',
+      'function heapify(arr, n, i) {',
+      '  let largest = i;',
+      '  const l = 2 * i + 1;',
+      '  const r = 2 * i + 2;',
+      '  if (l < n && arr[l] > arr[largest]) largest = l;',
+      '  if (r < n && arr[r] > arr[largest]) largest = r;',
+      '  if (largest !== i) {',
+      '    [arr[i], arr[largest]] = [arr[largest], arr[i]];',
+      '    heapify(arr, n, largest);',
+      '  }',
+      '}'
     ]
   };
 
@@ -378,16 +449,16 @@
   function* bubbleSort(a){
     const n = a.length;
     for(let i=0;i<n;i++){
-      yield {line:0};
+      yield {line:2};                                    // for (let i ...)
       for(let j=0;j<n-i-1;j++){
-        yield {line:1};
-        yield {type:'compare', idx:[j,j+1], line:2};
+        yield {line:3};                                  //   for (let j ...)
+        yield {type:'compare', idx:[j,j+1], line:4};      //     if (arr[j] > arr[j+1])
         if(a[j] > a[j+1]){
           [a[j],a[j+1]] = [a[j+1],a[j]];
-          yield {type:'swap', idx:[j,j+1], line:3};
+          yield {type:'swap', idx:[j,j+1], line:5};       //       [swap]
         }
       }
-      yield {type:'sorted', idx:[n-1-i], line:3};
+      yield {type:'sorted', idx:[n-1-i], line:5};
     }
   }
 
@@ -395,36 +466,36 @@
     const n = a.length;
     for(let i=0;i<n;i++){
       let min=i;
-      yield {line:1};
+      yield {line:3};                                     // let min = i;
       for(let j=i+1;j<n;j++){
-        yield {type:'compare', idx:[j,min], line:3};
+        yield {type:'compare', idx:[j,min], line:5};       //   if (arr[j] < arr[min]) min = j;
         if(a[j]<a[min]) min=j;
       }
       if(min!==i){
         [a[i],a[min]] = [a[min],a[i]];
-        yield {type:'swap', idx:[i,min], line:4};
+        yield {type:'swap', idx:[i,min], line:8};          //   [swap]
       }
-      yield {type:'sorted', idx:[i], line:4};
+      yield {type:'sorted', idx:[i], line:8};
     }
   }
 
   function* insertionSort(a){
     const n = a.length;
-    yield {type:'sorted', idx:[0], line:0};
+    yield {type:'sorted', idx:[0], line:2};
     for(let i=1;i<n;i++){
       const key = a[i];
       let j = i-1;
-      yield {line:1};
+      yield {line:5};                                     // while (j >= 0 && arr[j] > key)
       while(j>=0){
-        yield {type:'compare', idx:[j,j+1], line:2};
+        yield {type:'compare', idx:[j,j+1], line:5};
         if(a[j] > key){
           a[j+1]=a[j];
-          yield {type:'swap', idx:[j+1], line:3};
+          yield {type:'swap', idx:[j+1], line:6};          //   arr[j+1] = arr[j];
           j--;
         } else break;
       }
       a[j+1]=key;
-      yield {type:'swap', idx:[j+1], line:4};
+      yield {type:'swap', idx:[j+1], line:9};              // arr[j+1] = key;
     }
   }
 
@@ -433,17 +504,17 @@
     const right = a.slice(mid+1, hi+1);
     let i=0, j=0, k=lo;
     while(i<left.length && j<right.length){
-      yield {type:'compare', idx:[lo+i, mid+1+j], line:2};
-      if(left[i] <= right[j]){ a[k]=left[i]; yield {type:'swap', idx:[k], line:2}; i++; }
-      else { a[k]=right[j]; yield {type:'swap', idx:[k], line:2}; j++; }
+      yield {type:'compare', idx:[lo+i, mid+1+j], line:12};   // while (i < left.length && j < right.length)
+      if(left[i] <= right[j]){ a[k]=left[i]; yield {type:'swap', idx:[k], line:13}; i++; }  // if (left[i] <= right[j]) ...
+      else { a[k]=right[j]; yield {type:'swap', idx:[k], line:14}; j++; }                    // else arr[k++] = right[j++];
       k++;
     }
-    while(i<left.length){ a[k]=left[i]; yield {type:'swap', idx:[k], line:3}; i++; k++; }
-    while(j<right.length){ a[k]=right[j]; yield {type:'swap', idx:[k], line:3}; j++; k++; }
+    while(i<left.length){ a[k]=left[i]; yield {type:'swap', idx:[k], line:16}; i++; k++; }
+    while(j<right.length){ a[k]=right[j]; yield {type:'swap', idx:[k], line:17}; j++; k++; }
   }
   function* mergeSort(a, lo=0, hi=a.length-1){
     if(lo>=hi) return;
-    yield {line:1};
+    yield {line:1};                                            // if (lo >= hi) return;
     const mid = Math.floor((lo+hi)/2);
     yield* mergeSort(a, lo, mid);
     yield* mergeSort(a, mid+1, hi);
@@ -453,18 +524,18 @@
   // Partitions a[lo..hi] around a pivot (Lomuto partition scheme).
   // Every smaller-than-pivot element ends up left of the pivot's final position.
   function* partition(a, lo, hi){
-    const pivot = a[hi];                             // always pick the last element as the pivot
-    yield {type:'pivot', idx:[hi], line:1};          // tell the UI to highlight the pivot bar
+    const pivot = a[hi];                             // const pivot = arr[hi];
+    yield {type:'pivot', idx:[hi], line:9};          // tell the UI to highlight the pivot bar
 
     let i = lo-1;                                    // i tracks the boundary of "elements < pivot so far"
 
     for(let j=lo;j<hi;j++){
-      yield {type:'compare', idx:[j,hi], line:3};    // highlight the comparison a[j] vs pivot
+      yield {type:'compare', idx:[j,hi], line:12};   // if (arr[j] < pivot)
       if(a[j] < pivot){
         i++;                                         // grow the "smaller than pivot" region
         if(i!==j){
           [a[i],a[j]] = [a[j],a[i]];                  // swap in memory FIRST...
-          yield {type:'swap', idx:[i,j], line:3};    // ...then tell the UI to paint the swap
+          yield {type:'swap', idx:[i,j], line:14};    // ...then tell the UI to paint the swap
         }
       }
     }
@@ -472,9 +543,9 @@
     // move the pivot from the end into its correct sorted position
     if(i+1 !== hi){
       [a[i+1],a[hi]] = [a[hi],a[i+1]];
-      yield {type:'swap', idx:[i+1,hi], line:4};
+      yield {type:'swap', idx:[i+1,hi], line:17};
     }
-    yield {type:'sorted', idx:[i+1], line:4};        // pivot's final resting spot is locked in
+    yield {type:'sorted', idx:[i+1], line:17};       // pivot's final resting spot is locked in
     return i+1;                                       // hand back the pivot's index for recursion
   }
 
@@ -482,36 +553,36 @@
   // so every step yielded by a nested call also flows out through this generator.
   function* quickSort(a, lo=0, hi=a.length-1){
     if(lo<hi){
-      yield {line:0};                                // highlight "if lo < hi:" in the pseudocode panel
+      yield {line:1};                                // if (lo < hi) {
       const p = yield* partition(a, lo, hi);          // partition returns the pivot's final index
       yield* quickSort(a, lo, p-1);                   // recurse on the left side of the pivot
       yield* quickSort(a, p+1, hi);                   // recurse on the right side of the pivot
     } else if(lo===hi){
-      yield {type:'sorted', idx:[lo], line:0};        // a single element is trivially sorted
+      yield {type:'sorted', idx:[lo], line:1};        // a single element is trivially sorted
     }
   }
 
   function* heapify(a, n, i){
     let largest=i;
     const l=2*i+1, r=2*i+2;
-    if(l<n){ yield {type:'compare', idx:[l,largest], line:2}; if(a[l]>a[largest]) largest=l; }
-    if(r<n){ yield {type:'compare', idx:[r,largest], line:2}; if(a[r]>a[largest]) largest=r; }
+    if(l<n){ yield {type:'compare', idx:[l,largest], line:15}; if(a[l]>a[largest]) largest=l; }
+    if(r<n){ yield {type:'compare', idx:[r,largest], line:16}; if(a[r]>a[largest]) largest=r; }
     if(largest!==i){
       [a[i],a[largest]] = [a[largest],a[i]];
-      yield {type:'swap', idx:[i,largest], line:2};
+      yield {type:'swap', idx:[i,largest], line:18};
       yield* heapify(a, n, largest);
     }
   }
   function* heapSort(a){
     const n = a.length;
-    for(let i=Math.floor(n/2)-1;i>=0;i--){ yield {line:0}; yield* heapify(a, n, i); }
+    for(let i=Math.floor(n/2)-1;i>=0;i--){ yield {line:2}; yield* heapify(a, n, i); }
     for(let i=n-1;i>0;i--){
       [a[0],a[i]] = [a[i],a[0]];
-      yield {type:'swap', idx:[0,i], line:1};
-      yield {type:'sorted', idx:[i], line:1};
+      yield {type:'swap', idx:[0,i], line:6};
+      yield {type:'sorted', idx:[i], line:6};
       yield* heapify(a, i, 0);
     }
-    yield {type:'sorted', idx:[0], line:1};
+    yield {type:'sorted', idx:[0], line:6};
   }
 
   const GENERATORS = {
