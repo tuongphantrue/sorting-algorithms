@@ -23,6 +23,7 @@
     --amber:#b8720f;
     --red:#d64545;
     --blue:#1c78c4;
+    --kw:#8250df;
     --mono: 'IBM Plex Mono', ui-monospace, monospace;
     --sans: 'IBM Plex Sans', system-ui, sans-serif;
   }
@@ -232,12 +233,15 @@
     border-radius:8px; padding:14px 16px; font-family:var(--mono); font-size:12.5px;
     line-height:1.9; overflow-x:auto;
   }
-  .code-line{color:var(--text-dimmer); white-space:pre; padding:1px 8px; border-radius:4px; border-left:2px solid transparent;}
+  .code-line{color:var(--text-dim); white-space:pre; padding:1px 8px; border-radius:4px; border-left:2px solid transparent;}
   .code-line .ln{display:inline-block; width:2ch; color:var(--text-dimmer); opacity:0.6; margin-right:10px;}
   .code-line.active{color:var(--text); background:rgba(15,157,110,0.1); border-left:2px solid var(--accent);}
   .code-line.active .ln{color:var(--accent); opacity:1;}
   .code-line .cmt{color:var(--text-dimmer); opacity:0.75; font-style:italic;}
   .code-line.active .cmt{color:var(--text-dim); opacity:1;}
+  .code-line .kw{color:var(--kw); font-weight:600;}
+  .code-line .num{color:var(--amber);}
+  .code-line .fn{color:var(--blue);}
 
   /* ---------- mechanism explanation ---------- */
   .mechanism-panel{
@@ -689,10 +693,17 @@
   }
   function formatCodeLine(l){
     const idx = l.indexOf('//');
-    if(idx === -1) return escapeHtml(l);
-    const code = l.slice(0, idx);
-    const comment = l.slice(idx);
-    return `${escapeHtml(code)}<span class="cmt">${escapeHtml(comment)}</span>`;
+    const code = idx === -1 ? l : l.slice(0, idx);
+    const comment = idx === -1 ? '' : l.slice(idx);
+    return `${highlightCode(escapeHtml(code))}${comment ? `<span class="cmt">${escapeHtml(comment)}</span>` : ''}`;
+  }
+  function highlightCode(code){
+    return code
+      .replace(/\b(function|const|let|var|if|else|for|while|return|break)\b/g, '<span class="kw">$1</span>')
+      .replace(/\b(\d+)\b/g, '<span class="num">$1</span>')
+      .replace(/([a-zA-Z_]\w*)(?=\()/g, (m, name) =>
+        ['if','for','while'].includes(name) ? m : `<span class="fn">${name}</span>`
+      );
   }
   function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 
