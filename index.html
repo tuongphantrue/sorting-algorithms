@@ -239,6 +239,18 @@
   .code-line .cmt{color:var(--text-dimmer); opacity:0.75; font-style:italic;}
   .code-line.active .cmt{color:var(--text-dim); opacity:1;}
 
+  /* ---------- mechanism explanation ---------- */
+  .mechanism-panel{
+    margin-top:16px; background:var(--bg-panel-2); border:1px solid var(--border);
+    border-radius:8px; padding:14px 16px;
+  }
+  .mech-title{
+    margin:0 0 8px; font-family:var(--mono); font-size:11px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--text-dimmer);
+  }
+  .mech-title span{color:var(--accent); text-transform:none; letter-spacing:normal;}
+  .mech-text{margin:0; font-family:var(--sans); font-size:13.5px; line-height:1.65; color:var(--text-dim);}
+
   footer{
     margin-top:26px; text-align:center; color:var(--text-dimmer);
     font-family:var(--mono); font-size:11px; letter-spacing:0.04em;
@@ -313,6 +325,11 @@
         <span><span class="swatch" style="background:var(--red)"></span>swapping / writing</span>
         <span><span class="swatch" style="background:var(--blue)"></span>pivot</span>
         <span><span class="swatch" style="background:var(--accent)"></span>sorted</span>
+      </div>
+
+      <div class="mechanism-panel">
+        <p class="mech-title">How it works — <span id="mechAlgoName">Quick Sort</span></p>
+        <p class="mech-text" id="mechanismText"></p>
       </div>
 
       <div class="code-panel" id="codePanel"></div>
@@ -595,6 +612,14 @@
     bubble:'Bubble Sort', selection:'Selection Sort', insertion:'Insertion Sort',
     merge:'Merge Sort', quick:'Quick Sort', heap:'Heap Sort'
   };
+  const MECHANISMS = {
+    bubble: 'Repeatedly walks through the array comparing neighboring pairs and swapping them if they\'re in the wrong order. Each full pass "bubbles" the largest remaining value to its correct spot at the end, so after n passes the whole array is sorted. Simple to write, but slow on large arrays since it re-scans almost everything on every pass.',
+    selection: 'Splits the array into a sorted part (at the front) and an unsorted part. On each pass it scans the entire unsorted part to find the smallest value, then swaps it into place at the front of that unsorted region. It always does roughly n\u00b2/2 comparisons regardless of the input, but only n swaps total — cheap on writes, wasteful on comparisons.',
+    insertion: 'Builds up a sorted section one element at a time, like sorting playing cards in your hand. Each new element is compared backward through the sorted section and shifted right until it finds its correct slot. Very fast on data that\'s already nearly sorted, but degrades to n\u00b2 on reverse-sorted input.',
+    merge: 'A divide-and-conquer algorithm: split the array in half, recursively sort each half, then merge the two sorted halves back together by repeatedly taking the smaller of the two fronts. The split always happens evenly, so merge sort reliably runs in n log n time — at the cost of needing extra memory for the temporary left/right copies.',
+    quick: 'Also divide-and-conquer, but instead of splitting evenly it picks a pivot value and partitions the array so everything smaller ends up to its left and everything larger to its right — which also happens to be the pivot\'s final sorted position. It then recurses on each side. Very fast in practice (n log n on average) since it sorts in place, but a poorly chosen pivot on already-sorted data can degrade it to n\u00b2.',
+    heap: 'First rearranges the array into a max-heap, a binary-tree layout where every parent is larger than its children — which means the largest value always sits at the root. It repeatedly swaps that root with the last unsorted element, shrinks the heap by one, and "sifts" the new root down to restore the heap property. Guarantees n log n even in the worst case, and unlike merge sort it needs no extra memory.'
+  };
 
   // ---------- DOM ----------
   const barsEl = document.getElementById('bars');
@@ -607,6 +632,8 @@
   const shuffleBtn = document.getElementById('shuffleBtn');
   const algoLabel = document.getElementById('algoLabel');
   const codePanel = document.getElementById('codePanel');
+  const mechAlgoName = document.getElementById('mechAlgoName');
+  const mechanismText = document.getElementById('mechanismText');
   const statCompare = document.getElementById('statCompare');
   const statSwap = document.getElementById('statSwap');
   const statTime = document.getElementById('statTime');
@@ -644,8 +671,14 @@
     currentAlgo = key;
     algoLabel.textContent = LABELS[key];
     renderCode(key);
+    renderMechanism(key);
     highlightComplexityRow(key);
     resetForNewArray();
+  }
+
+  function renderMechanism(algo){
+    mechAlgoName.textContent = LABELS[algo];
+    mechanismText.textContent = MECHANISMS[algo];
   }
 
   function renderCode(algo){
@@ -831,6 +864,7 @@
   speedVal.textContent = speedRange.value;
   algoLabel.textContent = LABELS[currentAlgo];
   renderCode(currentAlgo);
+  renderMechanism(currentAlgo);
   highlightComplexityRow(currentAlgo);
   buildBars();
 })();
