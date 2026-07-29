@@ -9,20 +9,20 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0f0d;
-    --bg-panel:#0f1613;
-    --bg-panel-2:#0c1210;
-    --bg-raised:#131b17;
-    --border:#213028;
-    --border-bright:#2f4438;
-    --text:#dfeee6;
-    --text-dim:#7d9488;
-    --text-dimmer:#54655c;
-    --accent:#4be3a0;
-    --accent-dim:#2a7a58;
-    --amber:#f5a742;
-    --red:#ff6b6b;
-    --blue:#6ec8ff;
+    --bg:#ffffff;
+    --bg-panel:#ffffff;
+    --bg-panel-2:#f6f6f6;
+    --bg-raised:#f1f1f1;
+    --border:#e3e3e3;
+    --border-bright:#cfcfcf;
+    --text:#111111;
+    --text-dim:#666666;
+    --text-dimmer:#999999;
+    --accent:#0f9d6e;
+    --accent-dim:#0c7a56;
+    --amber:#b8720f;
+    --red:#d64545;
+    --blue:#1c78c4;
     --mono: 'IBM Plex Mono', ui-monospace, monospace;
     --sans: 'IBM Plex Sans', system-ui, sans-serif;
   }
@@ -31,9 +31,7 @@
   html{scroll-behavior:smooth;}
   body{
     margin:0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(75,227,160,0.07), transparent),
-      var(--bg);
+    background:var(--bg);
     color:var(--text);
     font-family:var(--sans);
     min-height:100vh;
@@ -49,13 +47,13 @@
     position:fixed; inset:0;
     background:repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,0.012) 0px,
-      rgba(255,255,255,0.012) 1px,
+      rgba(0,0,0,0.012) 0px,
+      rgba(0,0,0,0.012) 1px,
       transparent 1px,
       transparent 3px
     );
     z-index:50;
-    mix-blend-mode:overlay;
+    mix-blend-mode:multiply;
   }
 
   .wrap{max-width:1180px; margin:0 auto;}
@@ -151,13 +149,13 @@
     transition:border-color .15s, background .15s, transform .05s;
     text-transform:uppercase;
   }
-  button:hover{border-color:var(--accent-dim); background:#152019;}
+  button:hover{border-color:var(--accent-dim); background:var(--bg-panel-2);}
   button:active{transform:translateY(1px);}
   button.primary{
-    background:var(--accent); color:#04140c; border-color:var(--accent); flex:1;
+    background:var(--accent); color:#ffffff; border-color:var(--accent); flex:1;
     font-weight:600;
   }
-  button.primary:hover{background:#5ff0ad;}
+  button.primary:hover{background:var(--accent-dim);}
   button.primary[disabled]{opacity:0.55; cursor:not-allowed; transform:none;}
   button.ghost{flex:1;}
   button:disabled{opacity:0.4; cursor:not-allowed;}
@@ -168,7 +166,7 @@
   th{color:var(--text-dimmer); font-weight:500; text-transform:uppercase; font-size:10px; letter-spacing:0.06em;}
   td{color:var(--text-dim);}
   tr.active td{color:var(--accent);}
-  tr.active{background:rgba(75,227,160,0.06);}
+  tr.active{background:rgba(15,157,110,0.08);}
   td.name{color:var(--text);}
   tr.active td.name{color:var(--accent);}
 
@@ -191,17 +189,27 @@
   .bars{
     height:280px; display:flex; align-items:flex-end; gap:2px;
     border-bottom:1px solid var(--border); padding-bottom:2px;
+    padding-top:20px;
     position:relative;
   }
   .bar{
-    flex:1 1 0; min-width:2px; background:#f2f5f3;
+    flex:1 1 0; min-width:2px; background:var(--border-bright);
     border-radius:2px 2px 0 0; position:relative;
     transition:height .12s ease, background-color .08s ease, box-shadow .08s ease;
   }
-  .bar.compare{background:var(--amber); box-shadow:0 0 10px rgba(245,167,66,0.5);}
-  .bar.swap{background:var(--red); box-shadow:0 0 10px rgba(255,107,107,0.55);}
-  .bar.pivot{background:var(--blue); box-shadow:0 0 10px rgba(110,200,255,0.5);}
-  .bar.sorted{background:var(--accent); box-shadow:0 0 6px rgba(75,227,160,0.35);}
+  .bar.compare{background:var(--amber); box-shadow:0 0 8px rgba(184,114,15,0.35);}
+  .bar.swap{background:var(--red); box-shadow:0 0 8px rgba(214,69,69,0.35);}
+  .bar.pivot{background:var(--blue); box-shadow:0 0 8px rgba(28,120,196,0.35);}
+  .bar.sorted{background:var(--accent); box-shadow:0 0 6px rgba(15,157,110,0.25);}
+
+  .bar-val{
+    display:none;
+    position:absolute; top:-16px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:10px; color:var(--text-dim);
+    white-space:nowrap; pointer-events:none;
+  }
+  .bars.labels-on .bar-val{display:block;}
+  .bar.compare .bar-val, .bar.swap .bar-val, .bar.pivot .bar-val{color:var(--text);}
 
   .legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; font-family:var(--mono); font-size:10.5px; color:var(--text-dim);}
   .legend span{display:inline-flex; align-items:center; gap:6px; text-transform:uppercase; letter-spacing:0.04em;}
@@ -215,7 +223,7 @@
   }
   .code-line{color:var(--text-dimmer); white-space:pre; padding:1px 8px; border-radius:4px; border-left:2px solid transparent;}
   .code-line .ln{display:inline-block; width:2ch; color:var(--text-dimmer); opacity:0.6; margin-right:10px;}
-  .code-line.active{color:var(--text); background:rgba(75,227,160,0.08); border-left:2px solid var(--accent);}
+  .code-line.active{color:var(--text); background:rgba(15,157,110,0.1); border-left:2px solid var(--accent);}
   .code-line.active .ln{color:var(--accent); opacity:1;}
 
   footer{
@@ -296,7 +304,7 @@
       <div class="bars" id="bars"></div>
 
       <div class="legend">
-        <span><span class="swatch" style="background:#f2f5f3"></span>unsorted</span>
+        <span><span class="swatch" style="background:var(--border-bright)"></span>unsorted</span>
         <span><span class="swatch" style="background:var(--amber)"></span>comparing</span>
         <span><span class="swatch" style="background:var(--red)"></span>swapping / writing</span>
         <span><span class="swatch" style="background:var(--blue)"></span>pivot</span>
@@ -524,6 +532,7 @@
 
   let values = [];
   let barEls = [];
+  let labelEls = [];
   let running = false;
   let sortedSet = new Set();
   let compareCount = 0, swapCount = 0;
@@ -561,14 +570,23 @@
     return arr;
   }
 
+  const LABEL_MAX_COUNT = 45; // above this many bars, numbers stop being legible
+
   function buildBars(){
     values = randomArray(Number(sizeRange.value));
     sortedSet = new Set();
     barsEl.innerHTML = '';
+    barsEl.classList.toggle('labels-on', values.length <= LABEL_MAX_COUNT);
+    labelEls = [];
     barEls = values.map(v => {
       const d = document.createElement('div');
       d.className = 'bar';
       d.style.height = v + '%';
+      const val = document.createElement('span');
+      val.className = 'bar-val';
+      val.textContent = v;
+      d.appendChild(val);
+      labelEls.push(val);
       barsEl.appendChild(d);
       return d;
     });
@@ -583,7 +601,10 @@
   }
 
   function updateHeights(){
-    barEls.forEach((el,i) => { el.style.height = values[i] + '%'; });
+    barEls.forEach((el,i) => {
+      el.style.height = values[i] + '%';
+      labelEls[i].textContent = values[i];
+    });
   }
 
   function setStats(){
