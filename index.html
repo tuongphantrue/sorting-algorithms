@@ -243,6 +243,19 @@
   .code-line .num{color:var(--amber);}
   .code-line .fn{color:var(--blue);}
 
+  /* ---------- live array state ---------- */
+  .array-state{
+    margin-top:14px; font-family:var(--mono); font-size:12px; color:var(--text-dim);
+    line-height:1.7; word-break:break-all;
+  }
+  .array-state-label{color:var(--text-dimmer);}
+  .array-values .av{padding:1px 3px; border-radius:3px; transition:color .1s, background .1s;}
+  .array-values .av.compare{color:var(--amber); font-weight:600;}
+  .array-values .av.swap{color:var(--red); font-weight:600; background:rgba(214,69,69,0.08);}
+  .array-values .av.pivot{color:var(--blue); font-weight:600;}
+  .array-values .av.sorted{color:var(--accent);}
+  .array-values .av-sep{color:var(--text-dimmer);}
+
   /* ---------- mechanism explanation ---------- */
   .mechanism-panel{
     margin-top:16px; background:var(--bg-panel-2); border:1px solid var(--border);
@@ -329,6 +342,10 @@
         <span><span class="swatch" style="background:var(--red)"></span>swapping / writing</span>
         <span><span class="swatch" style="background:var(--blue)"></span>pivot</span>
         <span><span class="swatch" style="background:var(--accent)"></span>sorted</span>
+      </div>
+
+      <div class="array-state">
+        <span class="array-state-label">arr =&nbsp;[&nbsp;</span><span id="arrayValues" class="array-values"></span><span class="array-state-label">&nbsp;]</span>
       </div>
 
       <div class="mechanism-panel">
@@ -721,6 +738,9 @@
 
   const LABEL_MAX_COUNT = 45; // above this many bars, numbers stop being legible
 
+  const arrayValuesEl = document.getElementById('arrayValues');
+  let arrEls = [];
+
   function buildBars(){
     values = randomArray(Number(sizeRange.value));
     sortedSet = new Set();
@@ -739,10 +759,30 @@
       barsEl.appendChild(d);
       return d;
     });
+
+    arrayValuesEl.innerHTML = '';
+    arrEls = values.map((v, i) => {
+      const span = document.createElement('span');
+      span.className = 'av';
+      span.textContent = v;
+      arrayValuesEl.appendChild(span);
+      if(i < values.length - 1){
+        const sep = document.createElement('span');
+        sep.className = 'av-sep';
+        sep.textContent = ', ';
+        arrayValuesEl.appendChild(sep);
+      }
+      return span;
+    });
   }
 
   function paintStates(activeMap){
     barEls.forEach((el, i) => {
+      el.classList.remove('compare','swap','pivot','sorted');
+      if(sortedSet.has(i)) el.classList.add('sorted');
+      if(activeMap && activeMap[i]) el.classList.add(activeMap[i]);
+    });
+    arrEls.forEach((el, i) => {
       el.classList.remove('compare','swap','pivot','sorted');
       if(sortedSet.has(i)) el.classList.add('sorted');
       if(activeMap && activeMap[i]) el.classList.add(activeMap[i]);
@@ -753,6 +793,7 @@
     barEls.forEach((el,i) => {
       el.style.height = values[i] + '%';
       labelEls[i].textContent = values[i];
+      arrEls[i].textContent = values[i];
     });
   }
 
