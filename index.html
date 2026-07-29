@@ -451,35 +451,44 @@
     yield* merge(a, lo, mid, hi);
   }
 
+  // Partitions a[lo..hi] around a pivot (Lomuto partition scheme).
+  // Every smaller-than-pivot element ends up left of the pivot's final position.
   function* partition(a, lo, hi){
-    const pivot = a[hi];
-    yield {type:'pivot', idx:[hi], line:1};
-    let i = lo-1;
+    const pivot = a[hi];                             // always pick the last element as the pivot
+    yield {type:'pivot', idx:[hi], line:1};          // tell the UI to highlight the pivot bar
+
+    let i = lo-1;                                    // i tracks the boundary of "elements < pivot so far"
+
     for(let j=lo;j<hi;j++){
-      yield {type:'compare', idx:[j,hi], line:3};
+      yield {type:'compare', idx:[j,hi], line:3};    // highlight the comparison a[j] vs pivot
       if(a[j] < pivot){
-        i++;
+        i++;                                         // grow the "smaller than pivot" region
         if(i!==j){
-          [a[i],a[j]] = [a[j],a[i]];
-          yield {type:'swap', idx:[i,j], line:3};
+          [a[i],a[j]] = [a[j],a[i]];                  // swap in memory FIRST...
+          yield {type:'swap', idx:[i,j], line:3};    // ...then tell the UI to paint the swap
         }
       }
     }
+
+    // move the pivot from the end into its correct sorted position
     if(i+1 !== hi){
       [a[i+1],a[hi]] = [a[hi],a[i+1]];
       yield {type:'swap', idx:[i+1,hi], line:4};
     }
-    yield {type:'sorted', idx:[i+1], line:4};
-    return i+1;
+    yield {type:'sorted', idx:[i+1], line:4};        // pivot's final resting spot is locked in
+    return i+1;                                       // hand back the pivot's index for recursion
   }
+
+  // Classic recursive quicksort. Uses yield* to delegate to partition()/itself,
+  // so every step yielded by a nested call also flows out through this generator.
   function* quickSort(a, lo=0, hi=a.length-1){
     if(lo<hi){
-      yield {line:0};
-      const p = yield* partition(a, lo, hi);
-      yield* quickSort(a, lo, p-1);
-      yield* quickSort(a, p+1, hi);
+      yield {line:0};                                // highlight "if lo < hi:" in the pseudocode panel
+      const p = yield* partition(a, lo, hi);          // partition returns the pivot's final index
+      yield* quickSort(a, lo, p-1);                   // recurse on the left side of the pivot
+      yield* quickSort(a, p+1, hi);                   // recurse on the right side of the pivot
     } else if(lo===hi){
-      yield {type:'sorted', idx:[lo], line:0};
+      yield {type:'sorted', idx:[lo], line:0};        // a single element is trivially sorted
     }
   }
 
