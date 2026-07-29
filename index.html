@@ -236,6 +236,8 @@
   .code-line .ln{display:inline-block; width:2ch; color:var(--text-dimmer); opacity:0.6; margin-right:10px;}
   .code-line.active{color:var(--text); background:rgba(15,157,110,0.1); border-left:2px solid var(--accent);}
   .code-line.active .ln{color:var(--accent); opacity:1;}
+  .code-line .cmt{color:var(--text-dimmer); opacity:0.75; font-style:italic;}
+  .code-line.active .cmt{color:var(--text-dim); opacity:1;}
 
   footer{
     margin-top:26px; text-align:center; color:var(--text-dimmer);
@@ -326,111 +328,111 @@
   const PSEUDOCODE = {
     bubble: [
       'function bubbleSort(arr) {',
-      '  const n = arr.length;',
-      '  for (let i = 0; i < n; i++) {',
-      '    for (let j = 0; j < n - i - 1; j++) {',
-      '      if (arr[j] > arr[j + 1]) {',
-      '        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];',
+      '  const n = arr.length;                             // remember the array length',
+      '  for (let i = 0; i < n; i++) {                      // one full pass per iteration',
+      '    for (let j = 0; j < n - i - 1; j++) {             // bubble the largest remaining value rightward',
+      '      if (arr[j] > arr[j + 1]) {                     // out of order?',
+      '        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];  // swap the pair',
       '      }',
       '    }',
       '  }',
-      '  return arr;',
+      '  return arr;                                        // fully sorted after n passes',
       '}'
     ],
     selection: [
       'function selectionSort(arr) {',
-      '  const n = arr.length;',
-      '  for (let i = 0; i < n; i++) {',
-      '    let min = i;',
-      '    for (let j = i + 1; j < n; j++) {',
-      '      if (arr[j] < arr[min]) min = j;',
+      '  const n = arr.length;                              // remember the array length',
+      '  for (let i = 0; i < n; i++) {                       // fill position i with the next-smallest value',
+      '    let min = i;                                      // assume the current element is the smallest so far',
+      '    for (let j = i + 1; j < n; j++) {                 // scan the rest of the array',
+      '      if (arr[j] < arr[min]) min = j;                 // track the index of the smallest value found',
       '    }',
-      '    if (min !== i) {',
-      '      [arr[i], arr[min]] = [arr[min], arr[i]];',
+      '    if (min !== i) {                                  // only swap if a smaller value was found',
+      '      [arr[i], arr[min]] = [arr[min], arr[i]];        // put it in position i',
       '    }',
       '  }',
-      '  return arr;',
+      '  return arr;                                        // fully sorted, one minimum at a time',
       '}'
     ],
     insertion: [
       'function insertionSort(arr) {',
-      '  const n = arr.length;',
-      '  for (let i = 1; i < n; i++) {',
-      '    const key = arr[i];',
-      '    let j = i - 1;',
-      '    while (j >= 0 && arr[j] > key) {',
-      '      arr[j + 1] = arr[j];',
-      '      j--;',
+      '  const n = arr.length;                              // remember the array length',
+      '  for (let i = 1; i < n; i++) {                       // arr[0] is trivially sorted, start at index 1',
+      '    const key = arr[i];                               // the value we\'re inserting into the sorted part',
+      '    let j = i - 1;                                     // start comparing from the sorted portion\'s end',
+      '    while (j >= 0 && arr[j] > key) {                  // shift larger elements one step right',
+      '      arr[j + 1] = arr[j];                            // move the larger element forward',
+      '      j--;                                             // step left through the sorted portion',
       '    }',
-      '    arr[j + 1] = key;',
+      '    arr[j + 1] = key;                                  // drop key into its correct gap',
       '  }',
-      '  return arr;',
+      '  return arr;                                        // sorted portion grows by one each pass',
       '}'
     ],
     merge: [
       'function mergeSort(arr, lo = 0, hi = arr.length - 1) {',
-      '  if (lo >= hi) return;',
-      '  const mid = Math.floor((lo + hi) / 2);',
-      '  mergeSort(arr, lo, mid);',
-      '  mergeSort(arr, mid + 1, hi);',
-      '  merge(arr, lo, mid, hi);',
+      '  if (lo >= hi) return;                               // 0 or 1 elements are already sorted',
+      '  const mid = Math.floor((lo + hi) / 2);               // split the range in half',
+      '  mergeSort(arr, lo, mid);                             // sort the left half',
+      '  mergeSort(arr, mid + 1, hi);                         // sort the right half',
+      '  merge(arr, lo, mid, hi);                             // merge the two sorted halves',
       '}',
       '',
       'function merge(arr, lo, mid, hi) {',
-      '  const left = arr.slice(lo, mid + 1);',
-      '  const right = arr.slice(mid + 1, hi + 1);',
-      '  let i = 0, j = 0, k = lo;',
-      '  while (i < left.length && j < right.length) {',
-      '    if (left[i] <= right[j]) arr[k++] = left[i++];',
-      '    else arr[k++] = right[j++];',
+      '  const left = arr.slice(lo, mid + 1);                 // copy of the left half',
+      '  const right = arr.slice(mid + 1, hi + 1);            // copy of the right half',
+      '  let i = 0, j = 0, k = lo;                            // pointers into left, right, and arr',
+      '  while (i < left.length && j < right.length) {       // while both halves have elements left',
+      '    if (left[i] <= right[j]) arr[k++] = left[i++];    // take the smaller front element',
+      '    else arr[k++] = right[j++];                       // ...from whichever half has it',
       '  }',
-      '  while (i < left.length) arr[k++] = left[i++];',
-      '  while (j < right.length) arr[k++] = right[j++];',
+      '  while (i < left.length) arr[k++] = left[i++];        // copy any leftover left elements',
+      '  while (j < right.length) arr[k++] = right[j++];      // copy any leftover right elements',
       '}'
     ],
     quick: [
       'function quickSort(arr, lo = 0, hi = arr.length - 1) {',
-      '  if (lo < hi) {',
-      '    const p = partition(arr, lo, hi);',
-      '    quickSort(arr, lo, p - 1);',
-      '    quickSort(arr, p + 1, hi);',
+      '  if (lo < hi) {                                      // a range of 2+ elements needs sorting',
+      '    const p = partition(arr, lo, hi);                 // place a pivot in its final position',
+      '    quickSort(arr, lo, p - 1);                        // sort everything left of the pivot',
+      '    quickSort(arr, p + 1, hi);                         // sort everything right of the pivot',
       '  }',
       '}',
       '',
       'function partition(arr, lo, hi) {',
-      '  const pivot = arr[hi];',
-      '  let i = lo - 1;',
-      '  for (let j = lo; j < hi; j++) {',
-      '    if (arr[j] < pivot) {',
-      '      i++;',
-      '      [arr[i], arr[j]] = [arr[j], arr[i]];',
+      '  const pivot = arr[hi];                              // pick the last element as the pivot',
+      '  let i = lo - 1;                                      // boundary of "elements smaller than pivot"',
+      '  for (let j = lo; j < hi; j++) {                     // scan every element except the pivot',
+      '    if (arr[j] < pivot) {                              // smaller than pivot?',
+      '      i++;                                             // grow the smaller-than-pivot region',
+      '      [arr[i], arr[j]] = [arr[j], arr[i]];              // move it into that region',
       '    }',
       '  }',
-      '  [arr[i + 1], arr[hi]] = [arr[hi], arr[i + 1]];',
-      '  return i + 1;',
+      '  [arr[i + 1], arr[hi]] = [arr[hi], arr[i + 1]];        // drop the pivot right after that region',
+      '  return i + 1;                                        // pivot\'s final, correct index',
       '}'
     ],
     heap: [
       'function heapSort(arr) {',
-      '  const n = arr.length;',
-      '  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {',
-      '    heapify(arr, n, i);',
+      '  const n = arr.length;                               // remember the array length',
+      '  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {  // turn arr into a max-heap, bottom-up',
+      '    heapify(arr, n, i);                                // fix the heap property at index i',
       '  }',
-      '  for (let i = n - 1; i > 0; i--) {',
-      '    [arr[0], arr[i]] = [arr[i], arr[0]];',
-      '    heapify(arr, i, 0);',
+      '  for (let i = n - 1; i > 0; i--) {                   // repeatedly pull the max to the end',
+      '    [arr[0], arr[i]] = [arr[i], arr[0]];               // move current max out of the heap',
+      '    heapify(arr, i, 0);                                // restore heap order on the shrunk heap',
       '  }',
       '}',
       '',
       'function heapify(arr, n, i) {',
-      '  let largest = i;',
-      '  const l = 2 * i + 1;',
-      '  const r = 2 * i + 2;',
-      '  if (l < n && arr[l] > arr[largest]) largest = l;',
-      '  if (r < n && arr[r] > arr[largest]) largest = r;',
-      '  if (largest !== i) {',
-      '    [arr[i], arr[largest]] = [arr[largest], arr[i]];',
-      '    heapify(arr, n, largest);',
+      '  let largest = i;                                    // assume this node is the largest for now',
+      '  const l = 2 * i + 1;                                 // index of the left child',
+      '  const r = 2 * i + 2;                                 // index of the right child',
+      '  if (l < n && arr[l] > arr[largest]) largest = l;     // left child bigger? track it',
+      '  if (r < n && arr[r] > arr[largest]) largest = r;     // right child bigger? track it',
+      '  if (largest !== i) {                                 // a child was bigger than the parent',
+      '    [arr[i], arr[largest]] = [arr[largest], arr[i]];   // swap parent and biggest child',
+      '    heapify(arr, n, largest);                          // keep fixing the heap further down',
       '  }',
       '}'
     ]
@@ -649,8 +651,15 @@
   function renderCode(algo){
     const lines = PSEUDOCODE[algo];
     codePanel.innerHTML = lines.map((l,i) =>
-      `<div class="code-line" data-line="${i}"><span class="ln">${i+1}</span>${escapeHtml(l)}</div>`
+      `<div class="code-line" data-line="${i}"><span class="ln">${i+1}</span>${formatCodeLine(l)}</div>`
     ).join('');
+  }
+  function formatCodeLine(l){
+    const idx = l.indexOf('//');
+    if(idx === -1) return escapeHtml(l);
+    const code = l.slice(0, idx);
+    const comment = l.slice(idx);
+    return `${escapeHtml(code)}<span class="cmt">${escapeHtml(comment)}</span>`;
   }
   function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 
